@@ -1,0 +1,255 @@
+# Reglas del Proyecto Oggy - Composite Pattern + Composition Pattern
+
+## 1. Nomenclatura de Archivos
+- **Siempre en inglés**
+- **Siempre en minúsculas**
+- **Separación con guiones**
+- Ejemplos: `button-two-example.tsx`, `user-auth-composable.ts`, `api-service.ts`
+
+## 2. Estructura de Carpetas (Composite Pattern)
+```
+src/
+├── assets/          # Recursos estáticos
+├── components/      # Componentes compuestos
+├── composables/     # Lógica de composición
+├── constants/       # Constantes globales
+├── contexts/        # Contextos de React
+├── hooks/           # Custom hooks
+├── screens/         # Pantallas compuestas
+├── services/        # Servicios y APIs
+├── types/           # Definiciones de tipos
+├── utils/           # Utilidades
+├── App.tsx          # Componente raíz
+└── index.ts         # Punto de entrada
+```
+
+## 3. Composite Pattern - Jerarquía de Componentes
+
+### 3.1 Componentes Leaf (Hojas)
+- Componentes básicos sin hijos
+- Ejemplos: `button.tsx`, `input.tsx`, `icon.tsx`
+- Ubicación: `src/components/leaf/`
+
+### 3.2 Componentes Composite (Compuestos)
+- Componentes que contienen otros componentes
+- Ejemplos: `form.tsx`, `card.tsx`, `modal.tsx`
+- Ubicación: `src/components/composite/`
+
+### 3.3 Componentes Container (Contenedores)
+- Componentes que orquestan múltiples composites
+- Ejemplos: `page-layout.tsx`, `dashboard.tsx`
+- Ubicación: `src/components/container/`
+
+## 4. Composition Pattern - Reglas de Composición
+
+### 4.1 Composables (src/composables/)
+- **Responsabilidad única**: Cada composable debe tener una función específica
+- **Nomenclatura**: `use-[nombre].ts`
+- **Estructura**:
+```typescript
+export function use[ComposableName]() {
+  // Estado
+  const [state, setState] = useState()
+  
+  // Lógica
+  const actions = {
+    // métodos
+  }
+  
+  // Retorno
+  return {
+    state,
+    actions
+  }
+}
+```
+
+### 4.2 Hooks (src/hooks/)
+- Combinan múltiples composables
+- Nomenclatura: `use-[nombre].ts`
+- Ejemplo: `use-user-dashboard.ts` combina `use-auth.ts` + `use-user-data.ts`
+
+### 4.3 Componentes (src/components/)
+- **Leaf**: Componentes básicos
+- **Composite**: Componentes que usan otros componentes
+- **Container**: Componentes que orquestan composites
+
+## 5. Reglas de Implementación
+
+### 5.1 Orden de Creación
+1. **Types** → Definir interfaces
+2. **Constants** → Definir valores constantes
+3. **Utils** → Funciones auxiliares
+4. **Services** → APIs externas
+5. **Composables** → Lógica de negocio
+6. **Hooks** → Combinación de composables
+7. **Components** → UI que usa composables
+8. **Screens** → Páginas que orquestan componentes
+
+### 5.2 Flujo de Datos
+```
+Composables → Hooks → Components → Screens
+```
+
+### 5.3 Separación de Responsabilidades
+- **Composables**: Lógica de negocio y estado
+- **Components**: Presentación y UI
+- **Hooks**: Combinación de lógica
+- **Screens**: Orquestación de componentes
+
+## 6. Convenciones de Código
+
+### 6.1 Imports
+```typescript
+// 1. React y librerías externas
+import React from 'react'
+
+// 2. Componibles propios
+import { useAuth } from '@/composables/use-auth'
+
+// 3. Hooks propios
+import { useUserDashboard } from '@/hooks/use-user-dashboard'
+
+// 4. Componentes propios
+import { Button } from '@/components/leaf/button'
+
+// 5. Tipos
+import { User } from '@/types/user'
+
+// 6. Utilidades
+import { formatDate } from '@/utils/date'
+```
+
+### 6.2 Estructura de Componentes
+```typescript
+// 1. Imports
+import React from 'react'
+import { useAuth } from '@/composables/use-auth'
+
+// 2. Types
+interface ComponentProps {
+  // props
+}
+
+// 3. Component
+export function ComponentName({ props }: ComponentProps) {
+  // 4. Composables
+  const { state, actions } = useAuth()
+  
+  // 5. Render
+  return (
+    // JSX
+  )
+}
+```
+
+## 7. Reglas de Testing
+
+### 7.1 Composables
+- Testear lógica de negocio
+- Mockear servicios externos
+- Verificar estados y acciones
+
+### 7.2 Components
+- Testear renderizado
+- Testear interacciones
+- Mockear composables
+
+## 8. Performance
+
+### 8.1 Optimizaciones
+- Usar `React.memo` para componentes leaf
+- Usar `useMemo` y `useCallback` en composables
+- Lazy loading para screens
+
+### 8.2 Bundle Splitting
+- Componibles por feature
+- Componentes por página
+- Lazy loading de screens
+
+## 9. Estructura de Archivos por Feature
+
+```
+src/
+├── composables/
+│   ├── use-auth.ts
+│   ├── use-user.ts
+│   └── use-api.ts
+├── components/
+│   ├── leaf/
+│   │   ├── button.tsx
+│   │   └── input.tsx
+│   ├── composite/
+│   │   ├── form.tsx
+│   │   └── card.tsx
+│   └── container/
+│       └── page-layout.tsx
+├── screens/
+│   ├── auth/
+│   │   ├── login-screen.tsx
+│   │   └── register-screen.tsx
+│   └── dashboard/
+│       └── dashboard-screen.tsx
+```
+
+## 10. Reglas de Commit
+
+### 10.1 Nomenclatura de Commits
+```
+feat: add user authentication composable
+fix: resolve button component styling
+refactor: extract form logic to composable
+test: add unit tests for auth composable
+```
+
+### 10.2 Scope de Cambios
+- Un composable por commit
+- Un componente por commit
+- Una feature por branch
+
+## 11. Documentación
+
+### 11.1 Comentarios en Componibles
+```typescript
+/**
+ * Hook para manejar la autenticación del usuario
+ * @returns {Object} Objeto con estado y acciones de autenticación
+ */
+export function useAuth() {
+  // implementación
+}
+```
+
+### 11.2 README por Feature
+- Documentar composables
+- Documentar componentes
+- Ejemplos de uso
+
+## 12. Reglas de Seguridad
+
+### 12.1 Validación
+- Validar inputs en composables
+- Sanitizar datos antes de usar
+- Validar tipos con TypeScript
+
+### 12.2 Manejo de Errores
+- Try-catch en composables
+- Error boundaries en componentes
+- Logging de errores
+
+## 13. Reglas de Accesibilidad
+
+### 13.1 Componentes
+- Usar roles ARIA apropiados
+- Manejar focus y keyboard navigation
+- Proporcionar alt text para imágenes
+
+### 13.2 Componibles
+- Manejar estados de loading
+- Manejar estados de error
+- Proporcionar feedback al usuario
+
+globs:
+alwaysApply: false
+---
+
