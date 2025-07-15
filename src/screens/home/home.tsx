@@ -4,16 +4,20 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Header } from '../../components/composite/header';
 import { CardTask } from '../../components/leaf/today-card-task-section';
 import ProgressCards from '../../components/composite/carousel-progress-cards/progress-cards';
-import CarouselProgressCards from '../../components/composite/carousel-progress-cards/carousel-cards';
+import CarouselCards from '../../components/composite/carousel-progress-cards/carousel-cards';
 import React from 'react';
 import { TaskGroupsScroller, TaskGroupsCards } from '../../components/composite/task-groups-section';
 import { carouselInProgressData } from '../../components/composite/carousel-progress-cards/carousel-data';
 import { taskGroupsData } from '../../components/composite/task-groups-section/task-groups-data';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 function Home() {
+
+
+
   return (
-    <SafeAreaView style={styles.container} >
-      <Header style={{ paddingHorizontal: 20 }}>
+    <View style={styles.container}>
+      <Header style={{ paddingHorizontal: 20, }}>
         <Header.Avatar>
           <Image
             source={{ uri: 'https://ui-avatars.com/api/?name=Livia+Vaccaro&background=random' }}
@@ -34,9 +38,9 @@ function Home() {
       <View style={styles.cardTask}>
         <CardTask />
       </View>
-      <CarouselProgressCards>
-        <CarouselProgressCards.Header title="In Progress" count={6} />
-        <CarouselProgressCards.Carousel data={carouselInProgressData} height={130}>
+      <CarouselCards>
+        <CarouselCards.Header title="In Progress" count={6} />
+        <CarouselCards.Carousel data={carouselInProgressData} height={130}>
           {(item) => (
             <ProgressCards colorCard={item.colorCard} style={{ height: 120 }}>
               <ProgressCards.Title>
@@ -51,8 +55,8 @@ function Home() {
               <ProgressCards.Progress value={item.progress} type="linear" color={item.colorProgressBar} />
             </ProgressCards>
           )}
-        </CarouselProgressCards.Carousel>
-      </CarouselProgressCards>
+        </CarouselCards.Carousel>
+      </CarouselCards>
       {/* Task Groups Section */}
       <TaskGroupsScroller>
         <TaskGroupsScroller.Header title="Task Groups" count={taskGroupsData.length} />
@@ -60,7 +64,7 @@ function Home() {
           <TaskGroupsCards data={taskGroupsData} />
         </TaskGroupsScroller.Scroll>
       </TaskGroupsScroller>
-      </SafeAreaView>
+      </View>
   );
 }
 

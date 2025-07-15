@@ -4,6 +4,7 @@ import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import Home from './src/screens/home/home';
 import { GlowEffect } from './src/components/leaf/background';
+import TodayTask from './src/screens/today-task/today-task';
 
 export default function App() {
   return (
@@ -37,8 +38,7 @@ export default function App() {
             opacity={0.3}
             position={{ bottom: -150, right: 0 }}
           />
-          <Home />
-          <StatusBar style="auto" />
+          <TodayTask />
       </LinearGradient>
     </SafeAreaProvider>
   );
