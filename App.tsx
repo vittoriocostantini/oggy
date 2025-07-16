@@ -5,6 +5,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import Home from './src/screens/home/home';
 import { GlowEffect } from './src/components/leaf/background';
 import TodayTask from './src/screens/today-task/today-task';
+import AddProject from './src/screens/add-project/add-project';
 
 export default function App() {
   return (
@@ -38,7 +39,9 @@ export default function App() {
             opacity={0.3}
             position={{ bottom: -150, right: 0 }}
           />
-          <TodayTask />
+          {/* <TodayTask /> */}
+          <AddProject />
+          <StatusBar style="auto" />
       </LinearGradient>
     </SafeAreaProvider>
   );
