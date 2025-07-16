@@ -24,6 +24,7 @@ interface ChildrenProps {
 import React from 'react';
 import { View, StyleSheet, StyleProp, ViewStyle, Text } from 'react-native';
 import Svg, { Circle } from 'react-native-svg';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 const ProgressCards = ({ children, colorCard, style }: ProgressCardsProps) => (
   <View style={[styles.card, colorCard ? { backgroundColor: colorCard } : null, style]}>
@@ -112,14 +113,54 @@ ProgressCards.Icon = ({ children, color, style }: ChildrenProps) => (
   </View>
 );
 
+/**
+ * StatusTime: Composable, acepta children o props time y status
+ * Si recibe children, los renderiza; si no, usa time y status
+ */
+ProgressCards.StatusTime = ({ children, time, status }: { children?: React.ReactNode; time?: string; status?: 'done' | 'in-progress' | 'to-do' }) => {
+  if (children) return <View style={{ marginTop: 16 }}>{children}</View>;
+  if (!time || !status) return null;
+  let statusText = '';
+  let statusColor = '';
+  let statusBg = '';
+  switch (status) {
+    case 'done':
+      statusText = 'Done';
+      statusColor = '#a78bfa';
+      statusBg = '#ede9fe';
+      break;
+    case 'in-progress':
+      statusText = 'In Progress';
+      statusColor = '#fb923c';
+      statusBg = '#fff7ed';
+      break;
+    case 'to-do':
+      statusText = 'To-do';
+      statusColor = '#38bdf8';
+      statusBg = '#f0f9ff';
+      break;
+  }
+  return (
+    <View style={{ flexDirection: 'row', alignItems: 'center', width: '100%', marginTop: 16 }}>
+      <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}>
+        <MaterialCommunityIcons name="clock" size={18} color="#a78bfa" style={{ marginRight: 4 }} />
+        <Text style={{ color: '#a78bfa', fontSize: 16, fontWeight: '500' }}>{time}</Text>
+      </View>
+      <View style={{ backgroundColor: statusBg, borderRadius: 8, paddingHorizontal: 10, paddingVertical: 2, alignSelf: 'flex-end' }}>
+        <Text style={{ color: statusColor, fontWeight: '400', fontSize: 13 }}>{statusText}</Text>
+      </View>
+    </View>
+  );
+};
+
 // 3. Estilos
 const styles = StyleSheet.create({
   card: {
     borderRadius: 18,
-    padding: 18,
+    paddingVertical: 18,
+    paddingHorizontal: 24,
     width: 260,
     alignSelf: 'center',
-    height: 60,
     justifyContent: 'center',
     shadowColor: '#000',
     shadowOpacity: 0.06,
@@ -160,6 +201,7 @@ const styles = StyleSheet.create({
   },
   totalTaskContainer: {
     marginTop: 8,
+    borderRadius: 20,
   },
   iconContainer: {
     width: 38,
