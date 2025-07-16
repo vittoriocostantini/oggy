@@ -6,15 +6,12 @@ import { CardTask } from '../../components/leaf/today-card-task-section';
 import ProgressCards from '../../components/composite/carousel-progress-cards/progress-cards';
 import CarouselCards from '../../components/composite/carousel-progress-cards/carousel-cards';
 import React from 'react';
-import { TaskGroupsScroller, TaskGroupsCards } from '../../components/composite/task-groups-section';
+import { TaskGroupsCards } from '../../components/composite/task-groups-section';
 import { carouselInProgressData } from '../../components/composite/carousel-progress-cards/carousel-data';
 import { taskGroupsData } from '../../components/composite/task-groups-section/task-groups-data';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 function Home() {
-
-
-
   return (
     <View style={styles.container}>
       <Header style={{ paddingHorizontal: 20, }}>
@@ -58,12 +55,32 @@ function Home() {
         </CarouselCards.Carousel>
       </CarouselCards>
       {/* Task Groups Section */}
-      <TaskGroupsScroller>
-        <TaskGroupsScroller.Header title="Task Groups" count={taskGroupsData.length} />
-        <TaskGroupsScroller.Scroll>
-          <TaskGroupsCards data={taskGroupsData} />
-        </TaskGroupsScroller.Scroll>
-      </TaskGroupsScroller>
+      <View style={{height: 350}}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', marginLeft: 16, marginBottom: 10 }}>
+          <Text style={{ fontSize: 20, fontWeight: 'bold', color: '#222' }}>Task Groups</Text>
+          <View style={{ backgroundColor: '#ede9fe', borderRadius: 999, paddingHorizontal: 8, paddingVertical: 2, marginLeft: 8, minWidth: 24, justifyContent: 'center', alignItems: 'center' }}>
+            <Text style={{ color: '#a78bfa', fontSize: 14, fontWeight: '600' }}>{taskGroupsData.length}</Text>
+          </View>
+        </View>
+       
+          <TaskGroupsCards>
+            {taskGroupsData.map((group, idx) => (
+              <ProgressCards colorCard={group.cardColor} style={{ height: 60, width: 360, marginBottom: 12 }} key={idx}>
+                <View style={{ flexDirection: 'row', alignItems: 'center', height: '100%' }}>
+                  <View style={{ backgroundColor: group.iconBg, borderRadius: 12, padding: 4 }}>
+                    <MaterialCommunityIcons name={group.iconName} size={24} color={group.iconColor} />
+                  </View>
+                  <View style={{ marginLeft: 12, flex: 1 }}>
+                    <Text style={{ color: '#222', fontSize: 16, fontWeight: 'bold' }}>{group.title}</Text>
+                    <Text style={{ color: '#7b7b93', fontSize: 13, fontWeight: '500' }}>{group.tasks} Tasks</Text>
+                  </View>
+                  <ProgressCards.Progress value={group.progress} type="circular" color={group.progressColor} />
+                </View>
+              </ProgressCards>
+            ))}
+          </TaskGroupsCards>
+        
+      </View>
       </View>
   );
 }
