@@ -5,11 +5,11 @@ import { ViewProps } from 'react-native';
 
 const { width } = Dimensions.get('window');
 
-interface CarouselProgressCardsProps extends ViewProps {
+interface CarouselCardsProps extends ViewProps {
   children: React.ReactNode;
 }
 
-function CarouselProgressCards({ children, style, ...rest }: CarouselProgressCardsProps) {
+function CarouselCards({ children, style, ...rest }: CarouselCardsProps) {
   return (
     <View style={[styles.container, style]} {...rest}>
       {children}
@@ -68,9 +68,9 @@ function Item({ children }: ItemProps) {
   return <>{children}</>;
 }
 
-CarouselProgressCards.Header = Header;
-CarouselProgressCards.Carousel = CarouselComponent;
-CarouselProgressCards.Item = Item;
+CarouselCards.Header = Header;
+CarouselCards.Carousel = CarouselComponent;
+CarouselCards.Item = Item;
 
 const styles = StyleSheet.create({
   container: {
@@ -105,4 +105,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default CarouselProgressCards; 
+export default CarouselCards; 

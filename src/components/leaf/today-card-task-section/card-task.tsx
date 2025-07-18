@@ -56,7 +56,7 @@ const CardTask = () => {
 const styles = StyleSheet.create({
   card: {
     backgroundColor: '#6C3EF5',
-    marginTop: 20,
+    marginTop: 10,
     borderRadius: 24,
     padding: 20,
     width: '100%',
