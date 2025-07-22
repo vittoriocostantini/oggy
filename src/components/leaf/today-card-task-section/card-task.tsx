@@ -1,8 +1,10 @@
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Svg, Circle } from 'react-native-svg';
+import { useNavigation } from '@react-navigation/native';
 
 const CardTask = () => {
+  const navigation = useNavigation();
   const percentage = 85;
   const radius = 32;
   const strokeWidth = 6;
@@ -16,7 +18,10 @@ const CardTask = () => {
       </View>
       <Text style={styles.title}>Your today’s task{"\n"}almost done!</Text>
       <View style={styles.row}>
-        <TouchableOpacity style={styles.button}>
+        <TouchableOpacity 
+          style={styles.button}
+          onPress={() => (navigation as any).navigate('TodayStack')}
+        >
           <Text style={styles.buttonText}>View Task</Text>
         </TouchableOpacity>
         <View style={styles.progressContainer}>

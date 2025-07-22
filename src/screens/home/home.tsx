@@ -9,7 +9,7 @@ import React from 'react';
 import { TaskGroupsCards } from '../../components/composite/task-groups-section';
 import { carouselInProgressData } from '../../components/composite/carousel-progress-cards/carousel-data';
 import { taskGroupsData } from '../../components/composite/task-groups-section/task-groups-data';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import BellIcon from '../../components/leaf/icons/bell-icon';
 
 function Home() {
   return (
@@ -27,7 +27,7 @@ function Home() {
         </Header.Content>
         <Header.Actions>
           <View style={styles.bellContainer}>
-            <MaterialCommunityIcons name="bell" size={28} color="#222" />
+            <BellIcon size={28} color="#222" />
             <View style={styles.dot} />
           </View>
         </Header.Actions>
@@ -56,7 +56,7 @@ function Home() {
       </CarouselCards>
       {/* Task Groups Section */}
       <View style={{height: 350}}>
-        <View style={{ flexDirection: 'row', alignItems: 'center', marginLeft: 16, marginBottom: 10 }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', marginLeft: 16 }}>
           <Text style={{ fontSize: 20, fontWeight: 'bold', color: '#222' }}>Task Groups</Text>
           <View style={{ backgroundColor: '#ede9fe', borderRadius: 999, paddingHorizontal: 8, paddingVertical: 2, marginLeft: 8, minWidth: 24, justifyContent: 'center', alignItems: 'center' }}>
             <Text style={{ color: '#a78bfa', fontSize: 14, fontWeight: '600' }}>{taskGroupsData.length}</Text>

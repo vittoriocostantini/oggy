@@ -3,8 +3,11 @@ import { View, Text, StyleSheet, TextInput, TouchableOpacity, Image } from 'reac
 import { Header } from '../../components/composite/header';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { DatePicker } from '../../components/leaf/date-picker';
+import { BellIcon, ArrowLeftIcon, ChevronDownIcon } from '../../components/leaf/icons';
+import { useNavigation } from '@react-navigation/native';
 
 function AddProject() {
+  const navigation = useNavigation();
   const [startDate, setStartDate] = useState('Select Date');
   const [endDate, setEndDate] = useState('Select Date');
 
@@ -74,14 +77,16 @@ function AddProject() {
     <View style={styles.container}>
       <Header style={{ paddingHorizontal: 20 }}>
         <Header.Actions style={styles.backButton}>
-          <MaterialCommunityIcons name="arrow-left" size={24} color="#222" />
+          <TouchableOpacity onPress={() => navigation.goBack()}>
+            <ArrowLeftIcon size={24} color="#222" />
+          </TouchableOpacity>
         </Header.Actions>
         <Header.Content>
           <Text style={styles.title}>Add Project</Text>
         </Header.Content>
         <Header.Actions>
           <View style={styles.bellContainer}>
-            <MaterialCommunityIcons name="bell" size={28} color="#222" />
+            <BellIcon size={28} color="#222" />
             <View style={styles.dot} />
           </View>
         </Header.Actions>
@@ -98,7 +103,7 @@ function AddProject() {
               <Text style={styles.taskGroupValue}>Work</Text>
             </View>
           </View>
-          <MaterialCommunityIcons name="chevron-down" size={24} color="#222" style={styles.taskGroupChevron} />
+          <ChevronDownIcon size={24} color="#222" />
         </View>
         {/* Project Name */}
         <View style={styles.inputBoxWhite}>
