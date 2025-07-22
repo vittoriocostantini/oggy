@@ -7,7 +7,7 @@ interface TaskGroupsCardsProps {
 }
 
 const TaskGroupsCards: React.FC<TaskGroupsCardsProps> = ({ children, style }) => (
-  <ScrollView style={[styles.container, style ]} showsVerticalScrollIndicator={false} contentContainerStyle={{paddingBottom: 120, paddingTop: 20}}>{children}</ScrollView>
+  <ScrollView style={[styles.container, style ]} showsVerticalScrollIndicator={false} contentContainerStyle={{paddingBottom: 80, paddingTop: 20}}>{children}</ScrollView>
 );
 
 const styles = StyleSheet.create({

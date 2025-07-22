@@ -3,6 +3,8 @@ import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Calendar } from 'react-native-calendars';
 import { ModalContainer } from '../../container';
+import CalendarIcon from '../icons/calendar-icon';
+import ChevronDownIcon from '../icons/chevron-down-icon';
 
 interface DatePickerProps {
   label: string;
@@ -43,13 +45,13 @@ function DatePicker({ label, value, onDateChange, markedDates, initialDate }: Da
     <>
       <TouchableOpacity style={styles.dateBox} onPress={() => setShowCalendar(true)} activeOpacity={0.8}>
         <View style={styles.dateContent}>
-          <MaterialCommunityIcons name="calendar" size={22} color="#6C3EF5" />
+          <CalendarIcon size={22} color="#6C3EF5" />
           <View style={styles.dateTextBox}>
             <Text style={styles.dateLabel}>{label}</Text>
             <Text style={styles.dateValue}>{formatDate(value)}</Text>
           </View>
         </View>
-        <MaterialCommunityIcons name="chevron-down" size={24} color="#222" style={styles.dateChevron} />
+        <ChevronDownIcon size={24} color="#222" />
       </TouchableOpacity>
       
       <ModalContainer
