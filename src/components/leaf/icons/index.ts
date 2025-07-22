@@ -1,0 +1,8 @@
+export { default as AddIcon } from './add-icon';
+export { default as ArrowLeftIcon } from './arrow-left-icon';
+export { default as BellIcon } from './bell-icon';
+export { default as CalendarIcon } from './calendar-icon';
+export { default as ChevronDownIcon } from './chevron-down-icon';
+export { default as FileIcon } from './file-icon';
+export { default as HomeIcon } from './home-icon';
+export { default as TeamIcon } from './team-icon';

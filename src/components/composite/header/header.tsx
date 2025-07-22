@@ -1,13 +1,18 @@
 import { View, StyleSheet } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { HeaderProps } from '../../../models/header/header';
+import { ReactNode } from 'react';
+import { ViewStyle } from 'react-native';
+
+export interface HeaderProps {
+  children: ReactNode;
+  style?: ViewStyle;
+};
 
 const Header = ({ children, style }: HeaderProps) => (
-  <SafeAreaView style={styles.safeArea}>
+  <View style={styles.container}>
     <View style={[styles.header, style]} >
       {children}
     </View>
-  </SafeAreaView>
+  </View>
 );
 
 Header.Avatar = ({ children, style }: HeaderProps) => (
@@ -46,8 +51,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  safeArea: {
+  container: {
     backgroundColor: 'transparent',
+    paddingTop: 50,
   },
 });
 
