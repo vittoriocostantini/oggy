@@ -15,7 +15,6 @@ export default function App() {
     
         <NavigationContainer>
           <MainStack />
-        <Home />
         </NavigationContainer>
     </SafeAreaProvider>
     </GestureHandlerRootView>
