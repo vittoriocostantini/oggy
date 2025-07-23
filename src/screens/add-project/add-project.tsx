@@ -75,16 +75,11 @@ function AddProject() {
 
   return (
     <View style={styles.container}>
-      <Header style={{ paddingHorizontal: 20 }}>
-        <Header.Actions style={styles.backButton}>
-          <TouchableOpacity onPress={() => navigation.goBack()}>
-            <ArrowLeftIcon size={24} color="#222" />
-          </TouchableOpacity>
-        </Header.Actions>
-        <Header.Content>
+      <Header style={{ paddingHorizontal: 20, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', minHeight: 48 }}>
+        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
           <Text style={styles.title}>Add Project</Text>
-        </Header.Content>
-        <Header.Actions>
+        </View>
+        <Header.Actions style={{ position: 'absolute', right: 20 }}>
           <View style={styles.bellContainer}>
             <BellIcon size={28} color="#222" />
             <View style={styles.dot} />
@@ -170,10 +165,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#6C3EF5',
     borderRadius: 5,
   },
-  backButton: {
-    position: 'relative',
-    justifyContent: 'flex-start',
-  },
   formContainer: {
     padding: 20,
     flex: 1,
@@ -181,8 +172,6 @@ const styles = StyleSheet.create({
 
   buttonContainer: {
     flex: 1,
-    justifyContent: 'flex-end',
-    paddingBottom: 20,
   },
   addButton: {
     backgroundColor: '#6C3EF5',

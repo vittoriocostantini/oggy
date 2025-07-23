@@ -21,14 +21,16 @@ function TodayTask() {
   
   return (
     <View style={styles.container}>
-     <Header style={{ paddingHorizontal: 20, }}>
-        {isFromStack && (
-          <Header.Actions style={styles.backButton}>
+     <Header style={{ paddingHorizontal: 20, minHeight: 48 }}>
+        <Header.Actions style={styles.backButton}>
+          {isFromStack ? (
             <TouchableOpacity onPress={() => (navigation as any).goBack()}>
               <ArrowLeftIcon size={24} color="#222" />
             </TouchableOpacity>
-          </Header.Actions>
-        )}
+          ) : (
+            <View style={{ width: 24 }} />
+          )}
+        </Header.Actions>
         <Header.Content>
           <Text style={styles.title}>Today Task</Text>
         </Header.Content>
