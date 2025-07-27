@@ -50,8 +50,7 @@ export function CustomTabBar({ state, descriptors, navigation }: BottomTabBarPro
     
     if (!isFocused && !event.defaultPrevented) {
       if (route.name === 'Add') {
-        // No hacer nada para el botón Add
-        return;
+        navigation.navigate('TaskStack');
       } else {
         navigation.navigate(route.name);
       }

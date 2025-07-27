@@ -1,3 +1,4 @@
-export { TabNavigator } from './tab-navigator';
-export { MainStack } from './main-stack';
-export { TodayStack } from './today-stack'; 
+export * from './stack/main-stack';
+export * from './tab-navigator';
+export * from './stack/task-stack';
+export * from './stack/today-stack';
