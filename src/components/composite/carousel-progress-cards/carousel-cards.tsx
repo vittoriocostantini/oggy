@@ -42,7 +42,7 @@ interface CarouselProps {
 function CarouselComponent({ children, data, height = 130 }: CarouselProps) {
   return (
     <Carousel
-      width={width - 1}
+      width={width - 0}
       height={height}
       data={data}
       loop={false}
@@ -51,7 +51,7 @@ function CarouselComponent({ children, data, height = 130 }: CarouselProps) {
       mode="parallax"
       modeConfig={{
         parallaxScrollingScale: 0.9,
-        parallaxScrollingOffset: 120,
+        parallaxScrollingOffset: 140,
         parallaxAdjacentItemScale: 0.9,
       }}
       style={{ alignSelf: 'center' }}

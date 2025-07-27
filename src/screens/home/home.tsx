@@ -1,5 +1,4 @@
 import { View, Text, StyleSheet, Image, ScrollView } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Header } from '../../components/composite/header';
 import { CardTask } from '../../components/leaf/today-card-task-section';

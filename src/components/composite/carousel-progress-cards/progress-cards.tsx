@@ -7,11 +7,11 @@ interface ProgressCardsProps {
 
 interface ProgressProps {
   value: number;
-  type?: 'circular' | 'linear';
+  type?: "circular" | "linear";
   color?: string;
   style?: StyleProp<ViewStyle>;
-  radius?: number; // solo para circular
-  strokeWidth?: number; // solo para circular
+  radius?: number;
+  strokeWidth?: number;
 }
 
 interface ChildrenProps {
