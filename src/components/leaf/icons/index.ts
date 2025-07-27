@@ -6,3 +6,4 @@ export { default as ChevronDownIcon } from './chevron-down-icon';
 export { default as FileIcon } from './file-icon';
 export { default as HomeIcon } from './home-icon';
 export { default as TeamIcon } from './team-icon';
+export { default as AnimatedChevron } from './animated-chevron';

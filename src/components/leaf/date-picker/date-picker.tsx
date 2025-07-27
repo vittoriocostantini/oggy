@@ -3,7 +3,7 @@ import { View, Text, TouchableOpacity, StyleSheet, Platform } from 'react-native
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { ModalContainer } from '../../container';
 import CalendarIcon from '../icons/calendar-icon';
-import ChevronDownIcon from '../icons/chevron-down-icon';
+import { AnimatedChevron } from '../icons';
 
 // Helpers fuera del componente
 const MONTHS = [
@@ -28,18 +28,32 @@ interface SingleDatePickerProps {
 function SingleDatePicker({ label, value, otherDate, isStart, onChange }: SingleDatePickerProps) {
   const [showPicker, setShowPicker] = useState(false);
   const [date, setDate] = useState(value !== 'Select Date' ? new Date(value) : new Date());
+  const [tempDate, setTempDate] = useState(date);
 
   const handleChange = (_: any, selectedDate?: Date) => {
     const currentDate = selectedDate || date;
-    setDate(currentDate);
-    const formattedDate = currentDate.toISOString().split('T')[0];
+    setTempDate(currentDate);
+  };
+
+  const handleConfirm = () => {
+    setDate(tempDate);
+    const formattedDate = tempDate.toISOString().split('T')[0];
     onChange(formattedDate);
     setShowPicker(false);
   };
 
+  const handleCancel = () => {
+    setTempDate(date);
+    setShowPicker(false);
+  };
+
+  const handleOpenPicker = () => {
+    setShowPicker(true);
+  };
+
   return (
     <>
-      <TouchableOpacity style={styles.dateBox} onPress={() => setShowPicker(true)} activeOpacity={0.8}>
+      <TouchableOpacity style={styles.dateBox} onPress={handleOpenPicker} activeOpacity={0.8}>
         <View style={styles.dateContent}>
           <CalendarIcon size={22} color="#6C3EF5" />
           <View style={styles.dateTextBox}>
@@ -47,18 +61,26 @@ function SingleDatePicker({ label, value, otherDate, isStart, onChange }: Single
             <Text style={styles.dateValue}>{formatDate(value)}</Text>
           </View>
         </View>
-        <ChevronDownIcon size={24} color="#222" />
+        <AnimatedChevron isOpen={showPicker} size={24} color="#222" />
       </TouchableOpacity>
       {showPicker && (
-        <ModalContainer visible={showPicker} onClose={() => setShowPicker(false)}>
+        <ModalContainer visible={showPicker} onClose={handleCancel}>
           <View style={styles.pickerContainer}>
             <DateTimePicker
-              value={date}
+              value={tempDate}
               mode="date"
               display={Platform.OS === 'ios' ? 'spinner' : 'default'}
               onChange={handleChange}
               style={styles.nativePicker}
             />
+            <View style={styles.buttonContainer}>
+              <TouchableOpacity activeOpacity={0.8} style={styles.cancelButton} onPress={handleCancel}>
+                <Text style={styles.cancelButtonText}>Cancel</Text>
+              </TouchableOpacity>
+              <TouchableOpacity activeOpacity={0.8} style={styles.confirmButton} onPress={handleConfirm}>
+                <Text style={styles.confirmButtonText}>Confirm</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </ModalContainer>
       )}
@@ -107,6 +129,34 @@ const styles = StyleSheet.create({
   nativePicker: {
     width: 250,
     alignSelf: 'center',
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    marginTop: 20,
+    width: '100%',
+  },
+  cancelButton: {
+    backgroundColor: '#f0f0f0',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+  },
+  cancelButtonText: {
+    color: '#333',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  confirmButton: {
+    backgroundColor: '#6C3EF5',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+  },
+  confirmButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
   },
 });
 
