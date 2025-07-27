@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, Image } from 'react-native';
 import { Header } from '../../components/composite/header';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { DatePicker } from '../../components/leaf/date-picker';
+import { SingleDatePicker } from '../../components/leaf/date-picker/date-picker';
 import { BellIcon, ArrowLeftIcon, ChevronDownIcon } from '../../components/leaf/icons';
 import { useNavigation } from '@react-navigation/native';
 
@@ -10,68 +10,6 @@ function AddProject() {
   const navigation = useNavigation();
   const [startDate, setStartDate] = useState('Select Date');
   const [endDate, setEndDate] = useState('Select Date');
-
-
-
-  // Función para obtener fechas entre dos fechas (YYYY-MM-DD)
-  function getDatesInRange(start: string, end: string): string[] {
-    const dates = [];
-    const [startY, startM, startD] = start.split('-').map(Number);
-    const [endY, endM, endD] = end.split('-').map(Number);
-    let current = new Date(startY, startM - 1, startD);
-    const endDateObj = new Date(endY, endM - 1, endD);
-
-    while (current <= endDateObj) {
-      const yyyy = current.getFullYear();
-      const mm = String(current.getMonth() + 1).padStart(2, '0');
-      const dd = String(current.getDate()).padStart(2, '0');
-      dates.push(`${yyyy}-${mm}-${dd}`);
-      current.setDate(current.getDate() + 1);
-    }
-    return dates;
-  }
-
-  // Construir markedDates para el rango
-  function getMarkedDates() {
-    if (
-      startDate !== 'Select Date' &&
-      endDate !== 'Select Date' &&
-      startDate <= endDate
-    ) {
-      const range = getDatesInRange(startDate, endDate);
-      const marked: any = {};
-      range.forEach((date: string, idx: number) => {
-        if (idx === 0) {
-          marked[date] = {
-            startingDay: true,
-            color: '#6C3EF5',
-            textColor: '#fff',
-          };
-        } else if (idx === range.length - 1) {
-          marked[date] = {
-            endingDay: true,
-            color: '#6C3EF5',
-            textColor: '#fff',
-          };
-        } else {
-          marked[date] = {
-            color: '#6C3EF5',
-            textColor: '#fff',
-          };
-        }
-      });
-      return marked;
-    } else if (startDate !== 'Select Date') {
-      return {
-        [startDate]: { startingDay: true, endingDay: true, color: '#6C3EF5', textColor: '#fff' },
-      };
-    } else if (endDate !== 'Select Date') {
-      return {
-        [endDate]: { startingDay: true, endingDay: true, color: '#6C3EF5', textColor: '#fff' },
-      };
-    }
-    return {};
-  }
 
   return (
     <View style={styles.container}>
@@ -114,24 +52,21 @@ function AddProject() {
             numberOfLines={4}
           />
         </View>
-        {/* Start Date */}
-        <DatePicker
+        {/* Date Range Picker */}
+        <SingleDatePicker
           label="Start Date"
           value={startDate}
-          onDateChange={setStartDate}
-          markedDates={getMarkedDates()}
-          initialDate={startDate !== 'Select Date' ? startDate : undefined}
+          otherDate={endDate}
+          isStart={true}
+          onChange={date => setStartDate(date)}
         />
-        {/* End Date */}
-        <DatePicker
+        <SingleDatePicker
           label="End Date"
           value={endDate}
-          onDateChange={setEndDate}
-          markedDates={getMarkedDates()}
-          initialDate={endDate !== 'Select Date' ? endDate : undefined}
+          otherDate={startDate}
+          isStart={false}
+          onChange={date => setEndDate(date)}
         />
-    
-       
         {/* Add Project Button */}
         <View style={styles.buttonContainer}>
           <TouchableOpacity activeOpacity={0.6} style={styles.addButton}>

@@ -1,6 +1,6 @@
 import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
-import TodayTask from '../screens/today-task/today-task';
+import TodayTask from '../../screens/today-task/today-task';
 
 const Stack = createStackNavigator();
 
