@@ -26,6 +26,12 @@ import { View, StyleSheet, StyleProp, ViewStyle, Text } from 'react-native';
 import Svg, { Circle } from 'react-native-svg';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
+// Función de utilidad para truncar texto
+export const truncateText = (text: string, maxLength: number = 10) => {
+  if (text.length <= maxLength) return text;
+  return text.substring(0, maxLength) + '...';
+};
+
 const ProgressCards = ({ children, colorCard, style }: ProgressCardsProps) => (
   <View style={[styles.card, colorCard ? { backgroundColor: colorCard } : null, style]}>
     {children}
@@ -41,6 +47,21 @@ ProgressCards.Title = ({ children, style }: ChildrenProps) => (
     {children}
   </View>
 );
+
+/**
+ * TruncatedText: Componente de texto que automáticamente trunca el contenido
+ * Props: children, style, maxLength
+ */
+ProgressCards.TruncatedText = ({ children, style, maxLength = 20 }: { children: React.ReactNode; style?: StyleProp<ViewStyle>; maxLength?: number }) => {
+  if (typeof children === 'string') {
+    return (
+      <Text style={style}>
+        {truncateText(children, maxLength)}
+      </Text>
+    );
+  }
+  return <Text style={style}>{children}</Text>;
+};
 
 /**
  * Progress: Barra de progreso lineal o circular
@@ -206,7 +227,7 @@ const styles = StyleSheet.create({
   iconContainer: {
     width: 38,
     height: 38,
-    borderRadius: 8,
+    borderRadius: 38,
     alignItems: 'center',
     justifyContent: 'center',
   },

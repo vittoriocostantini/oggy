@@ -46,7 +46,9 @@ function Home() {
                     <MaterialCommunityIcons name={item.icon} size={20} color={item.iconColor} />
                   </View>
                 </View>
-                <Text style={{ color: '#222', fontSize: 17, fontWeight: 'bold', marginBottom: 8 }}>{item.title}</Text>
+                <Text style={{ color: '#222', fontSize: 17, fontWeight: 'bold', marginBottom: 8 }} numberOfLines={2} ellipsizeMode="tail">
+                  {item.title.length > 25 ? item.title.substring(0, 40) + '...' : item.title}
+                </Text>
               </ProgressCards.Title>
               <ProgressCards.Progress value={item.progress} type="linear" color={item.colorProgressBar} />
             </ProgressCards>
@@ -66,11 +68,13 @@ function Home() {
             {taskGroupsData.map((group, idx) => (
               <ProgressCards colorCard={group.cardColor} style={{ height: 60, width: 360, marginBottom: 12 }} key={idx}>
                 <View style={{ flexDirection: 'row', alignItems: 'center', height: '100%' }}>
-                  <View style={{ backgroundColor: group.iconBg, borderRadius: 12, padding: 4 }}>
-                    <MaterialCommunityIcons name={group.iconName} size={24} color={group.iconColor} />
+                  <View style={{ backgroundColor: group.iconBg, borderRadius: 30, padding: 3 }}>
+                    <MaterialCommunityIcons name={group.iconName} size={19}  color={group.iconColor} />
                   </View>
                   <View style={{ marginLeft: 12, flex: 1 }}>
-                    <Text style={{ color: '#222', fontSize: 16, fontWeight: 'bold' }}>{group.title}</Text>
+                    <Text style={{ color: '#222', fontSize: 16, fontWeight: 'bold' }} numberOfLines={1} ellipsizeMode="tail">
+                      {group.title.length > 20 ? group.title.substring(0, 25) + '...' : group.title}
+                    </Text>
                     <Text style={{ color: '#7b7b93', fontSize: 13, fontWeight: '500' }}>{group.tasks} Tasks</Text>
                   </View>
                   <ProgressCards.Progress value={group.progress} type="circular" color={group.progressColor} />

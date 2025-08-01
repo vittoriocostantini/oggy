@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Header } from '../../components/composite/header';
 import { SingleDatePicker } from '../../components/leaf/date-picker/date-picker';
 import { BellIcon } from '../../components/leaf/icons';
@@ -7,11 +8,14 @@ import { FormContainer } from '../../components/container';
 import { useNavigation } from '@react-navigation/native';
 
 function AddProject() {
-  const navigation = useNavigation();
   const [startDate, setStartDate] = useState('Select Date');
   const [endDate, setEndDate] = useState('Select Date');
   const [projectName, setProjectName] = useState('');
   const [description, setDescription] = useState('');
+  const [selectedIcon, setSelectedIcon] = useState({
+    name: 'briefcase' as keyof typeof MaterialCommunityIcons.glyphMap,
+    color: '#FFD6E3'
+  });
 
   const handleAddProject = () => {
     // Lógica para agregar proyecto
@@ -35,7 +39,12 @@ function AddProject() {
         <FormContainer.TaskGroupSelector
           label="Task Group"
           value="Work"
+          iconName={selectedIcon.name}
+          iconColor={selectedIcon.color}
           onPress={() => {}}
+          onIconSelect={(iconName, iconColor) => {
+            setSelectedIcon({ name: iconName, color: iconColor });
+          }}
         />
         
         <FormContainer.InputField

@@ -23,6 +23,10 @@ function AddTask() {
   const [endDate, setEndDate] = useState('Select Date');
   const [taskName, setTaskName] = useState('');
   const [description, setDescription] = useState('');
+  const [selectedIcon, setSelectedIcon] = useState({
+    name: 'briefcase' as keyof typeof MaterialCommunityIcons.glyphMap,
+    color: '#FFD6E3'
+  });
 
   const handleAddTask = () => {
     // Lógica para agregar tarea
@@ -61,6 +65,11 @@ function AddTask() {
         <FormContainer.TaskGroupSelector
           label="Project Group"
           value="Grocery shopping app design"
+          iconName={selectedIcon.name}
+          iconColor={selectedIcon.color}
+          onIconSelect={(iconName, iconColor) => {
+            setSelectedIcon({ name: iconName, color: iconColor });
+          }}
           onPress={() => {}}
         />
         
@@ -68,6 +77,7 @@ function AddTask() {
           label="Task Name"
           placeholder="Enter task name"
           value={taskName}
+
           onChangeText={setTaskName}
         />
         
