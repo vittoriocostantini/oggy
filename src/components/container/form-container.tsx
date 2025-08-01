@@ -1,7 +1,8 @@
 import React from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, TouchableWithoutFeedback, Animated } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { ChevronDownIcon } from '../leaf/icons';
+import { useIconSelector } from '../../assets/hooks/icon-selector/use-icon-selector';
 
 interface FormContainerProps {
   children: React.ReactNode;
@@ -20,6 +21,7 @@ interface TaskGroupSelectorProps {
   iconName?: keyof typeof MaterialCommunityIcons.glyphMap;
   iconColor?: string;
   onPress?: () => void;
+  onIconSelect?: (iconName: keyof typeof MaterialCommunityIcons.glyphMap, iconColor: string) => void;
 }
 
 interface InputFieldProps {
@@ -43,6 +45,8 @@ interface ButtonProps {
   disabled?: boolean;
 }
 
+
+
 const FormContainer: React.FC<FormContainerProps> & FormContainerSubComponents = ({ children }) => {
   return (
     <View style={styles.formContainer}>
@@ -55,35 +59,107 @@ const FormContainer: React.FC<FormContainerProps> & FormContainerSubComponents =
 FormContainer.TaskGroupSelector = ({ 
   label, 
   value, 
-  iconName = "briefcase", 
-  iconColor = "#fff",
-  onPress 
+  iconName,
+  iconColor,
+  onPress,
+  onIconSelect
 }) => {
+  // Función para truncar el texto si es muy largo
+  const truncateText = (text: string, maxLength: number = 20) => {
+    if (text.length <= maxLength) return text;
+    return text.substring(0, maxLength) + '...';
+  };
+
+  const {
+    selectedIcon,
+    isExpanded,
+    iconOptions,
+    animatedHeight,
+    animatedOpacity,
+    rotateInterpolation,
+    handleIconPress,
+    handleIconSelect,
+    closeSelector,
+  } = useIconSelector(iconName, iconColor, onIconSelect);
+
   return (
-    <TouchableOpacity 
-      style={styles.taskGroupBox} 
-      onPress={onPress}
-      activeOpacity={0.7}
-    >
-      <View style={styles.taskGroupContent}>
+    <View style={styles.taskGroupContainer}>
+      {isExpanded && (
+        <TouchableWithoutFeedback onPress={closeSelector}>
+          <View style={styles.overlay} />
+        </TouchableWithoutFeedback>
+      )}
+      
+      <View style={styles.iconSelectorContainer}>
         <TouchableOpacity 
-          style={styles.iconCircle}
+          style={[styles.iconContainer, isExpanded && styles.iconContainerActive]}
           activeOpacity={0.8}
-          onPress={onPress}
+          onPress={handleIconPress}
         >
-          <MaterialCommunityIcons 
-            name={iconName as keyof typeof MaterialCommunityIcons.glyphMap} 
-            size={20} 
-            color={iconColor} 
-          />
+          <View style={[styles.iconCircle, { backgroundColor: selectedIcon.color }]}>
+            <MaterialCommunityIcons 
+              name={selectedIcon.name} 
+              size={20} 
+              color="#fff" 
+            />
+          </View>
+          <Animated.View style={[styles.chevronIcon, { transform: [{ rotate: rotateInterpolation }] }]}>
+            <MaterialCommunityIcons 
+              name="chevron-down" 
+              size={16} 
+              color="#666" 
+            />
+          </Animated.View>
         </TouchableOpacity>
-        <View style={styles.taskGroupTextBox}>
-          <Text style={styles.taskGroupLabel}>{label}</Text>
-          <Text style={styles.taskGroupValue}>{value}</Text>
-        </View>
+        
+        <Animated.View 
+          style={[
+            styles.modernIconSelector,
+            {
+              opacity: animatedOpacity,
+              maxHeight: animatedHeight,
+            }
+          ]}
+        >
+          <ScrollView 
+            style={styles.iconScrollView}
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={styles.iconScrollContent}
+          >
+            {iconOptions.map((icon, index) => (
+              <TouchableOpacity
+                key={index}
+                style={styles.modernIconOption}
+                onPress={() => handleIconSelect(icon.name, icon.color)}
+                activeOpacity={0.7}
+              >
+                <View style={[styles.modernIconCircle, { backgroundColor: icon.color }]}>
+                  <MaterialCommunityIcons 
+                    name={icon.name as keyof typeof MaterialCommunityIcons.glyphMap} 
+                    size={20} 
+                    color="#fff" 
+                  />
+                </View>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+        </Animated.View>
       </View>
-      <ChevronDownIcon size={24} color="#222" />
-    </TouchableOpacity>
+      
+      <TouchableOpacity 
+        style={styles.taskGroupBox}
+        activeOpacity={0.8}
+        onPress={onPress}
+      >
+        <View style={styles.taskGroupContent}>
+                  <View style={styles.taskGroupTextBox}>
+          <Text style={styles.taskGroupLabel}>{label}</Text>
+          <Text style={styles.taskGroupValue}>{truncateText(value)}</Text>
+        </View>
+        </View>
+        <ChevronDownIcon size={24} color="#222" />
+      </TouchableOpacity>
+    </View>
   );
 };
 
@@ -95,6 +171,8 @@ FormContainer.InputField = ({ label, placeholder, value, onChangeText }) => {
       <TextInput 
         style={styles.inputNoBg}
         placeholder={placeholder}
+        maxLength={30}
+        
         value={value}
         onChangeText={onChangeText}
       />
@@ -146,18 +224,20 @@ const styles = StyleSheet.create({
     padding: 20,
     flex: 1,
   },
-  taskGroupBox: {
+  taskGroupContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+    taskGroupBox: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#fff',
-    borderRadius: 16,
     paddingVertical: 12,
     paddingHorizontal: 16,
-    marginBottom: 16,
-    shadowColor: '#000',
-    shadowOpacity: 0.04,
-    shadowRadius: 8,
-    elevation: 2,
+    flex: 1,
+    borderTopRightRadius: 16,
+    borderBottomRightRadius: 16,
     justifyContent: 'space-between',
   },
   taskGroupContent: {
@@ -177,6 +257,27 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '700',
     color: '#222',
+    flex: 1,
+    flexWrap: 'wrap',
+  },
+  iconContainer: {
+    borderTopLeftRadius: 16,
+    borderBottomLeftRadius: 16,
+    borderTopRightRadius: 0,
+    borderBottomRightRadius: 0,
+    backgroundColor: '#fff',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: 17,
+    paddingHorizontal: 8,
+    flexDirection: 'row',
+  },
+  iconContainerActive: {
+    borderColor: '#6C3EF5',
+    backgroundColor: '#F8F5FF',
+  },
+  chevronIcon: {
+    marginLeft: 4,
   },
   iconCircle: {
     width: 28,
@@ -185,8 +286,82 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFD6E3',
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: 8,
   },
+  iconSelectorContainer: {
+    position: 'relative',
+  },
+  overlay: {
+    position: 'absolute',
+    top: -1000,
+    left: -1000,
+    right: -1000,
+    bottom: -1000,
+    backgroundColor: 'transparent',
+    zIndex: 999,
+  },
+  iconSelectorDropdown: {
+    position: 'absolute',
+    top: '100%',
+    left: 0,
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    padding: 8,
+    marginTop: 4,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 4,
+    zIndex: 1000,
+  },
+  iconOption: {
+    marginHorizontal: 4,
+  },
+  iconOptionCircle: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modernIconSelector: {
+    position: 'absolute',
+    top: '100%',
+    left: 0,
+    backgroundColor: '#fff',
+    borderRadius: 16,
+    marginTop: 8,
+    shadowColor: '#000',
+    shadowOpacity: 0.15,
+    shadowRadius: 12,
+    elevation: 8,
+    zIndex: 1000,
+    minWidth: 65,
+  },
+  iconScrollView: {
+    maxHeight: 160,
+  },
+  iconScrollContent: {
+    paddingVertical: 4,
+  },
+  modernIconOption: {
+    marginBottom: 8,
+    paddingVertical: 6,
+    paddingHorizontal: 8,
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  modernIconCircle: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+
   inputBoxWhite: {
     backgroundColor: '#fff',
     borderRadius: 16,
