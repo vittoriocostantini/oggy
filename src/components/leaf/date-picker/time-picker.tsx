@@ -1,9 +1,18 @@
-import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Platform } from 'react-native';
+import React, { useState, useCallback, useMemo } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, Platform, Animated, TouchableWithoutFeedback } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import CalendarIcon from '../icons/calendar-icon';
-import ChevronDownIcon from '../icons/chevron-down-icon';
-import ModalContainer from '../../container/modal-container';
+import AnimatedChevron from '../icons/animated-chevron';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { useExpandAnimation } from '../../../assets/hooks/expand-box/use-expand-animation';
+
+// Constantes
+const PICKER_HEIGHT_IOS = 200;
+const PICKER_HEIGHT_ANDROID = 150;
+const Z_INDEX_PICKER = 1000;
+const Z_INDEX_DATEBOX = 1;
+
+const getPickerHeight = (): number => 
+  Platform.OS === 'ios' ? PICKER_HEIGHT_IOS : PICKER_HEIGHT_ANDROID;
 
 interface TimePickerProps {
   label: string;
@@ -22,48 +31,95 @@ function formatTime(date: Date | null): string {
 }
 
 function TimePicker({ label, value, onChange }: TimePickerProps) {
-  const [show, setShow] = useState(false);
+  const [tempTime, setTempTime] = useState(value || new Date());
 
-  const handleChange = (_: any, selectedDate?: Date) => {
+  // Hook de animación
+  const {
+    isExpanded,
+    toggleExpansion,
+    animatedHeight,
+    animatedOpacity,
+    animatedTextOpacity,
+  } = useExpandAnimation({
+    expandedHeight: getPickerHeight(),
+  });
+
+  const handleChange = useCallback((_: any, selectedDate?: Date) => {
+    const currentDate = selectedDate || tempTime;
     if (selectedDate) {
-      onChange(selectedDate);
-      setShow(false);
-    } else if (Platform.OS === 'android') {
-      setShow(false);
+      onChange(currentDate);
+      toggleExpansion(false);
     }
-  };
+  }, [tempTime, onChange, toggleExpansion]);
+
+  const handleOpenPicker = useCallback(() => {
+    toggleExpansion(!isExpanded);
+  }, [isExpanded, toggleExpansion]);
+
+  const handleOutsidePress = useCallback(() => {
+    if (isExpanded) {
+      toggleExpansion(false);
+    }
+  }, [isExpanded, toggleExpansion]);
+
+  // Estilos memoizados
+  const expandedPickerStyle = useMemo(() => [
+    styles.expandedPicker,
+    {
+      height: animatedHeight,
+      opacity: animatedOpacity,
+    }
+  ], [animatedHeight, animatedOpacity]);
+
+  const dateContentStyle = useMemo(() => [
+    styles.dateContent, 
+    { opacity: animatedTextOpacity }
+  ], [animatedTextOpacity]);
 
   return (
-    <>
-      <TouchableOpacity style={styles.dateBox} onPress={() => setShow(true)} activeOpacity={0.8}>
-        <View style={styles.dateContent}>
-          <CalendarIcon size={22} color="#6C3EF5" />
+    <View style={styles.container}>
+      <TouchableOpacity 
+        style={styles.dateBox} 
+        onPress={handleOpenPicker} 
+        activeOpacity={0.8}
+      >
+        <Animated.View style={dateContentStyle}>
+          <MaterialCommunityIcons name="clock" size={22} color="#6C3EF5" />
           <View style={styles.dateTextBox}>
             <Text style={styles.dateLabel}>{label}</Text>
             <Text style={styles.dateValue}>{formatTime(value)}</Text>
           </View>
-        </View>
-        <ChevronDownIcon size={24} color="#222" />
+        </Animated.View>
+        <AnimatedChevron isOpen={isExpanded} size={24} color="#222" />
       </TouchableOpacity>
-      {show && (
-        <ModalContainer visible={show} onClose={() => setShow(false)}>
-          <View style={styles.pickerContainer}>
-            <DateTimePicker
-              value={value && !isNaN(value.getTime()) ? value : new Date()}
-              mode="time"
-              is24Hour={false}
-              display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-              onChange={handleChange}
-              style={styles.nativePicker}
-            />
-          </View>
-        </ModalContainer>
+      
+      {isExpanded && (
+        <TouchableWithoutFeedback onPress={handleOutsidePress}>
+          <View style={styles.overlay} />
+        </TouchableWithoutFeedback>
       )}
-    </>
+      
+      <Animated.View style={expandedPickerStyle}>
+        <View style={styles.pickerContainer}>
+          <DateTimePicker
+            value={tempTime && !isNaN(tempTime.getTime()) ? tempTime : new Date()}
+            mode="time"
+            is24Hour={false}
+            display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+            onChange={handleChange}
+            style={styles.nativePicker}
+          />
+        </View>
+      </Animated.View>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
+  container: {
+    marginBottom: 16,
+    position: 'relative',
+  },
   dateBox: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -71,12 +127,22 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     paddingVertical: 14,
     paddingHorizontal: 16,
-    marginBottom: 16,
     shadowColor: '#000',
     shadowOpacity: 0.04,
     shadowRadius: 8,
     elevation: 2,
     justifyContent: 'space-between',
+    position: 'relative',
+    zIndex: Z_INDEX_DATEBOX,
+  },
+  overlay: {
+    position: 'absolute',
+    top: -1000,
+    left: -1000,
+    right: -1000,
+    bottom: -1000,
+    backgroundColor: 'transparent',
+    zIndex: Z_INDEX_PICKER - 1,
   },
   dateContent: {
     flexDirection: 'row',
@@ -96,13 +162,25 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: '#222',
   },
-  dateChevron: {
-    marginLeft: 12,
+  expandedPicker: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: '#fff',
+    borderRadius: 16,
+    shadowColor: '#000',
+    shadowOpacity: 0.15,
+    shadowRadius: 12,
+    elevation: 8,
+    overflow: 'hidden',
+    zIndex: Z_INDEX_PICKER,
+    padding: 0,
+    margin: 0,
   },
   pickerContainer: {
     alignItems: 'center',
     justifyContent: 'center',
-    padding: 10,
   },
   nativePicker: {
     width: 250,

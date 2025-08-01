@@ -1,1 +1,2 @@
-export { default as DatePicker } from './date-picker'; 
+export { SingleDatePicker } from './date-picker';
+export { useExpandAnimation } from '../../../assets/hooks/expand-box/use-expand-animation'; 
