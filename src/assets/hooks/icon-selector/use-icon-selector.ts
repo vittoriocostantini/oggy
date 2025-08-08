@@ -1,7 +1,7 @@
 import { useState, useRef } from 'react';
 import { Animated } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { useExpandAnimation } from '../expand-box/use-expand-animation';
+import { useExpandAnimation } from '../expand-box-date/use-expand-animation';
 
 interface SelectedIcon {
   name: keyof typeof MaterialCommunityIcons.glyphMap;

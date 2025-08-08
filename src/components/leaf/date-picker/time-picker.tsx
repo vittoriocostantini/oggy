@@ -3,7 +3,7 @@ import { View, Text, TouchableOpacity, StyleSheet, Platform, Animated, Touchable
 import DateTimePicker from '@react-native-community/datetimepicker';
 import AnimatedChevron from '../icons/animated-chevron';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { useExpandAnimation } from '../../../assets/hooks/expand-box/use-expand-animation';
+import { useExpandAnimation } from '../../../assets/hooks/expand-box-date/use-expand-animation';
 
 // Constantes
 const PICKER_HEIGHT_IOS = 200;
