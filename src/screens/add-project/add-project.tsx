@@ -5,7 +5,7 @@ import { Header } from '../../components/composite/header';
 import { SingleDatePicker } from '../../components/leaf/date-picker/date-picker';
 import { BellIcon } from '../../components/leaf/icons';
 import { FormContainer } from '../../components/container';
-import { useNavigation } from '@react-navigation/native';
+// import { useNavigation } from '@react-navigation/native';
 
 function AddProject() {
   const [startDate, setStartDate] = useState('Select Date');
@@ -36,16 +36,20 @@ function AddProject() {
       </Header>
       
       <FormContainer>
-        <FormContainer.TaskGroupSelector
-          label="Task Group"
-          value="Work"
-          iconName={selectedIcon.name}
-          iconColor={selectedIcon.color}
-          onPress={() => {}}
-          onIconSelect={(iconName, iconColor) => {
-            setSelectedIcon({ name: iconName, color: iconColor });
-          }}
-        />
+        <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 16 }}>
+          <FormContainer.IconSelector
+            iconName={selectedIcon.name}
+            iconColor={selectedIcon.color}
+            onIconSelect={(iconName, iconColor) => {
+              setSelectedIcon({ name: iconName, color: iconColor });
+            }}
+          />
+          <FormContainer.TaskGroupBox
+            label="Project Group"
+            value="Work"
+            onPress={() => {}}
+          />
+        </View>
         
         <FormContainer.InputField
           label="Project Name"

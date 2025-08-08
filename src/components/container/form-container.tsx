@@ -9,19 +9,26 @@ interface FormContainerProps {
 }
 
 interface FormContainerSubComponents {
-  TaskGroupSelector: React.FC<TaskGroupSelectorProps>;
+  IconSelector: React.FC<IconSelectorProps>;
+  TaskGroupBox: React.FC<TaskGroupBoxProps>;
   InputField: React.FC<InputFieldProps>;
   TextAreaField: React.FC<TextAreaFieldProps>;
   Button: React.FC<ButtonProps>;
 }
 
-interface TaskGroupSelectorProps {
-  label: string;
-  value: string;
+interface IconSelectorProps {
   iconName?: keyof typeof MaterialCommunityIcons.glyphMap;
   iconColor?: string;
+  onIconSelect?: (
+    iconName: keyof typeof MaterialCommunityIcons.glyphMap,
+    iconColor: string
+  ) => void;
+}
+
+interface TaskGroupBoxProps {
+  label: string;
+  value: string;
   onPress?: () => void;
-  onIconSelect?: (iconName: keyof typeof MaterialCommunityIcons.glyphMap, iconColor: string) => void;
 }
 
 interface InputFieldProps {
@@ -55,21 +62,8 @@ const FormContainer: React.FC<FormContainerProps> & FormContainerSubComponents =
   );
 };
 
-// Subcomponente para el selector de grupo de tareas
-FormContainer.TaskGroupSelector = ({ 
-  label, 
-  value, 
-  iconName,
-  iconColor,
-  onPress,
-  onIconSelect
-}) => {
-  // Función para truncar el texto si es muy largo
-  const truncateText = (text: string, maxLength: number = 20) => {
-    if (text.length <= maxLength) return text;
-    return text.substring(0, maxLength) + '...';
-  };
-
+// Subcomponente: selector de icono con dropdown animado
+FormContainer.IconSelector = ({ iconName, iconColor, onIconSelect }) => {
   const {
     selectedIcon,
     isExpanded,
@@ -83,83 +77,87 @@ FormContainer.TaskGroupSelector = ({
   } = useIconSelector(iconName, iconColor, onIconSelect);
 
   return (
-    <View style={styles.taskGroupContainer}>
+    <View style={styles.iconSelectorContainer}>
       {isExpanded && (
         <TouchableWithoutFeedback onPress={closeSelector}>
           <View style={styles.overlay} />
         </TouchableWithoutFeedback>
       )}
-      
-      <View style={styles.iconSelectorContainer}>
-        <TouchableOpacity 
-          style={[styles.iconContainer, isExpanded && styles.iconContainerActive]}
-          activeOpacity={0.8}
-          onPress={handleIconPress}
-        >
-          <View style={[styles.iconCircle, { backgroundColor: selectedIcon.color }]}>
-            <MaterialCommunityIcons 
-              name={selectedIcon.name} 
-              size={20} 
-              color="#fff" 
-            />
-          </View>
-          <Animated.View style={[styles.chevronIcon, { transform: [{ rotate: rotateInterpolation }] }]}>
-            <MaterialCommunityIcons 
-              name="chevron-down" 
-              size={16} 
-              color="#666" 
-            />
-          </Animated.View>
-        </TouchableOpacity>
-        
-        <Animated.View 
-          style={[
-            styles.modernIconSelector,
-            {
-              opacity: animatedOpacity,
-              maxHeight: animatedHeight,
-            }
-          ]}
-        >
-          <ScrollView 
-            style={styles.iconScrollView}
-            showsVerticalScrollIndicator={false}
-            contentContainerStyle={styles.iconScrollContent}
-          >
-            {iconOptions.map((icon, index) => (
-              <TouchableOpacity
-                key={index}
-                style={styles.modernIconOption}
-                onPress={() => handleIconSelect(icon.name, icon.color)}
-                activeOpacity={0.7}
-              >
-                <View style={[styles.modernIconCircle, { backgroundColor: icon.color }]}>
-                  <MaterialCommunityIcons 
-                    name={icon.name as keyof typeof MaterialCommunityIcons.glyphMap} 
-                    size={20} 
-                    color="#fff" 
-                  />
-                </View>
-              </TouchableOpacity>
-            ))}
-          </ScrollView>
-        </Animated.View>
-      </View>
-      
-      <TouchableOpacity 
-        style={styles.taskGroupBox}
+
+      <TouchableOpacity
+        style={[styles.iconContainer, isExpanded && styles.iconContainerActive]}
         activeOpacity={0.8}
-        onPress={onPress}
+        onPress={handleIconPress}
       >
-        <View style={styles.taskGroupContent}>
-                  <View style={styles.taskGroupTextBox}>
+        <View style={[styles.iconCircle, { backgroundColor: selectedIcon.color }]}>
+          <MaterialCommunityIcons
+            name={selectedIcon.name}
+            size={20}
+            color="#fff"
+          />
+        </View>
+        <Animated.View style={[styles.chevronIcon, { transform: [{ rotate: rotateInterpolation }] }]}>
+          <MaterialCommunityIcons name="chevron-down" size={16} color="#666" />
+        </Animated.View>
+      </TouchableOpacity>
+
+      <Animated.View
+        style={[
+          styles.modernIconSelector,
+          {
+            opacity: animatedOpacity,
+            maxHeight: animatedHeight,
+          },
+        ]}
+      >
+        <ScrollView
+          style={styles.iconScrollView}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={styles.iconScrollContent}
+        >
+          {iconOptions.map((icon, index) => (
+            <TouchableOpacity
+              key={index}
+              style={styles.modernIconOption}
+              onPress={() => handleIconSelect(icon.name, icon.color)}
+              activeOpacity={0.7}
+            >
+              <View style={[styles.modernIconCircle, { backgroundColor: icon.color }]}>
+                <MaterialCommunityIcons
+                  name={icon.name as keyof typeof MaterialCommunityIcons.glyphMap}
+                  size={20}
+                  color="#fff"
+                />
+              </View>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+      </Animated.View>
+    </View>
+  );
+};
+
+// Subcomponente: caja para seleccionar grupo de tareas
+FormContainer.TaskGroupBox = ({ label, value, onPress }) => {
+  const truncateText = (text: string, maxLength: number = 20) => {
+    if (text.length <= maxLength) return text;
+    return text.substring(0, maxLength) + '...';
+  };
+
+  return (
+    <TouchableOpacity
+      style={styles.taskGroupBox}
+      activeOpacity={0.8}
+      onPress={onPress}
+    >
+      <View style={styles.taskGroupContent}>
+        <View style={styles.taskGroupTextBox}>
           <Text style={styles.taskGroupLabel}>{label}</Text>
           <Text style={styles.taskGroupValue}>{truncateText(value)}</Text>
         </View>
-        </View>
-        <ChevronDownIcon size={24} color="#222" />
-      </TouchableOpacity>
-    </View>
+      </View>
+      <ChevronDownIcon size={24} color="#222" />
+    </TouchableOpacity>
   );
 };
 
