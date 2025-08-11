@@ -1,8 +1,13 @@
 import React from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, TouchableWithoutFeedback, Animated } from 'react-native';
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, TouchableWithoutFeedback, Animated, TextInputProps } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { ChevronDownIcon } from '../leaf/icons';
+import { AnimatedChevron } from '../leaf/icons';
 import { useIconSelector } from '../../assets/hooks/icon-selector/use-icon-selector';
+import { useExpandAnimation } from '../../assets/hooks/expand-box-date';
+
+// Constantes de z-index compartidas
+const Z_INDEX_OVERLAY = 999;
+const Z_INDEX_PANEL = 1000;
 
 interface FormContainerProps {
   children: React.ReactNode;
@@ -16,7 +21,7 @@ interface FormContainerSubComponents {
   Button: React.FC<ButtonProps>;
 }
 
-interface IconSelectorProps {
+export interface IconSelectorProps {
   iconName?: keyof typeof MaterialCommunityIcons.glyphMap;
   iconColor?: string;
   onIconSelect?: (
@@ -25,24 +30,19 @@ interface IconSelectorProps {
   ) => void;
 }
 
-interface TaskGroupBoxProps {
+export interface TaskGroupBoxProps {
   label: string;
   value: string;
   onPress?: () => void;
+  expandedHeight?: number;
 }
 
-interface InputFieldProps {
+export interface InputFieldProps extends Omit<TextInputProps, 'style' | 'children'> {
   label: string;
-  placeholder?: string;
-  value?: string;
-  onChangeText?: (text: string) => void;
 }
 
-interface TextAreaFieldProps {
+export interface TextAreaFieldProps extends Omit<TextInputProps, 'style' | 'children'> {
   label: string;
-  placeholder?: string;
-  value?: string;
-  onChangeText?: (text: string) => void;
   numberOfLines?: number;
 }
 
@@ -115,9 +115,9 @@ FormContainer.IconSelector = ({ iconName, iconColor, onIconSelect }) => {
           showsVerticalScrollIndicator={false}
           contentContainerStyle={styles.iconScrollContent}
         >
-          {iconOptions.map((icon, index) => (
+          {iconOptions.map((icon) => (
             <TouchableOpacity
-              key={index}
+              key={`${icon.name}-${icon.color}`}
               style={styles.modernIconOption}
               onPress={() => handleIconSelect(icon.name, icon.color)}
               activeOpacity={0.7}
@@ -137,42 +137,62 @@ FormContainer.IconSelector = ({ iconName, iconColor, onIconSelect }) => {
   );
 };
 
-// Subcomponente: caja para seleccionar grupo de tareas
-FormContainer.TaskGroupBox = ({ label, value, onPress }) => {
+// Subcomponente: caja para seleccionar grupo de tareas (con animación tipo date-picker)
+FormContainer.TaskGroupBox = ({ label, value, onPress, expandedHeight = 180 }) => {
   const truncateText = (text: string, maxLength: number = 20) => {
     if (text.length <= maxLength) return text;
     return text.substring(0, maxLength) + '...';
   };
 
+  const { isExpanded, toggleExpansion, animatedHeight, animatedOpacity, animatedTextOpacity } =
+    useExpandAnimation({ expandedHeight });
+
   return (
-    <TouchableOpacity
-      style={styles.taskGroupBox}
-      activeOpacity={0.8}
-      onPress={onPress}
-    >
-      <View style={styles.taskGroupContent}>
-        <View style={styles.taskGroupTextBox}>
-          <Text style={styles.taskGroupLabel}>{label}</Text>
-          <Text style={styles.taskGroupValue}>{truncateText(value)}</Text>
-        </View>
-      </View>
-      <ChevronDownIcon size={24} color="#222" />
-    </TouchableOpacity>
+    <View style={styles.taskGroupWrapper}>
+      {isExpanded && (
+        <TouchableWithoutFeedback onPress={() => toggleExpansion(false)}>
+          <View style={styles.overlay} />
+        </TouchableWithoutFeedback>
+      )}
+
+      <TouchableOpacity
+        style={styles.taskGroupBox}
+        activeOpacity={0.8}
+        onPress={() => {
+          toggleExpansion(!isExpanded);
+          onPress?.();
+        }}
+        accessibilityRole="button"
+        accessibilityState={{ expanded: isExpanded }}
+      >
+        <Animated.View style={[styles.taskGroupContent, { opacity: animatedTextOpacity }]}>
+          <View style={styles.taskGroupTextBox}>
+            <Text style={styles.taskGroupLabel}>{label}</Text>
+            <Text style={styles.taskGroupValue}>{truncateText(value)}</Text>
+          </View>
+        </Animated.View>
+        <AnimatedChevron isOpen={isExpanded} size={24} color="#222" />
+      </TouchableOpacity>
+
+      <Animated.View
+        style={[
+          styles.expandedTaskGroup,
+          { height: animatedHeight, opacity: animatedOpacity },
+        ]}
+      />
+    </View>
   );
 };
 
 // Subcomponente para campos de entrada de texto
-FormContainer.InputField = ({ label, placeholder, value, onChangeText }) => {
+FormContainer.InputField = ({ label, ...rest }) => {
   return (
     <View style={styles.inputBoxWhite}>
       <Text style={styles.inputLabel}>{label}</Text>
       <TextInput 
         style={styles.inputNoBg}
-        placeholder={placeholder}
         maxLength={30}
-        
-        value={value}
-        onChangeText={onChangeText}
+        {...rest}
       />
     </View>
   );
@@ -180,11 +200,9 @@ FormContainer.InputField = ({ label, placeholder, value, onChangeText }) => {
 
 // Subcomponente para campos de área de texto
 FormContainer.TextAreaField = ({ 
-  label, 
-  placeholder, 
-  value, 
-  onChangeText, 
-  numberOfLines = 4 
+  label,
+  numberOfLines = 4,
+  ...rest
 }) => {
   return (
     <View style={styles.inputBoxWhite}>
@@ -193,9 +211,7 @@ FormContainer.TextAreaField = ({
         style={styles.textAreaNoBg}
         multiline={true}
         numberOfLines={numberOfLines}
-        placeholder={placeholder}
-        value={value}
-        onChangeText={onChangeText}
+        {...rest}
       />
     </View>
   );
@@ -227,6 +243,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 16,
   },
+  taskGroupWrapper: {
+    position: 'relative',
+    flex: 1,
+  },
     taskGroupBox: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -257,6 +277,22 @@ const styles = StyleSheet.create({
     color: '#222',
     flex: 1,
     flexWrap: 'wrap',
+  },
+  expandedTaskGroup: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: '#fff',
+    borderRadius: 16,
+    shadowColor: '#000',
+    shadowOpacity: 0.15,
+    shadowRadius: 12,
+    elevation: 8,
+    overflow: 'hidden',
+    zIndex: Z_INDEX_PANEL,
+    padding: 0,
+    margin: 0,
   },
   iconContainer: {
     borderTopLeftRadius: 16,
@@ -295,7 +331,7 @@ const styles = StyleSheet.create({
     right: -1000,
     bottom: -1000,
     backgroundColor: 'transparent',
-    zIndex: 999,
+    zIndex: Z_INDEX_OVERLAY,
   },
   iconSelectorDropdown: {
     position: 'absolute',
@@ -309,7 +345,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 8,
     elevation: 4,
-    zIndex: 1000,
+    zIndex: Z_INDEX_PANEL,
   },
   iconOption: {
     marginHorizontal: 4,
@@ -332,7 +368,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.15,
     shadowRadius: 12,
     elevation: 8,
-    zIndex: 1000,
+    zIndex: Z_INDEX_PANEL,
     minWidth: 65,
   },
   iconScrollView: {
