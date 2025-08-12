@@ -12,10 +12,7 @@ function AddProject() {
   const [endDate, setEndDate] = useState('Select Date');
   const [projectName, setProjectName] = useState('');
   const [description, setDescription] = useState('');
-  const [selectedIcon, setSelectedIcon] = useState({
-    name: 'briefcase' as keyof typeof MaterialCommunityIcons.glyphMap,
-    color: '#FFD6E3'
-  });
+  const [selectedGroup, setSelectedGroup] = useState('Work');
 
   const handleAddProject = () => {
     // Lógica para agregar proyecto
@@ -36,20 +33,14 @@ function AddProject() {
       </Header>
       
       <FormContainer>
-        <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 16 }}>
-          <FormContainer.IconSelector
-            iconName={selectedIcon.name}
-            iconColor={selectedIcon.color}
-            onIconSelect={(iconName, iconColor) => {
-              setSelectedIcon({ name: iconName, color: iconColor });
-            }}
-          />
-          <FormContainer.TaskGroupBox
-            label="Project Group"
-            value="Work"
-            onPress={() => {}}
-          />
-        </View>
+        <FormContainer.TaskGroupBox
+          label="Task Group"
+          value={selectedGroup}
+          onGroupSelect={(groupName) => {
+            setSelectedGroup(groupName);
+            console.log('Selected group:', groupName);
+          }}
+        />
         
         <FormContainer.InputField
           label="Project Name"
