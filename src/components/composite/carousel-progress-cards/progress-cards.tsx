@@ -21,19 +21,25 @@ interface ChildrenProps {
 }
 
 // 2. Componente principal y subcomponentes
-import React from 'react';
-import { View, StyleSheet, StyleProp, ViewStyle, Text } from 'react-native';
-import Svg, { Circle } from 'react-native-svg';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import React from "react";
+import { View, StyleSheet, StyleProp, ViewStyle, Text } from "react-native";
+import Svg, { Circle } from "react-native-svg";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 // Función de utilidad para truncar texto
 export const truncateText = (text: string, maxLength: number = 10) => {
   if (text.length <= maxLength) return text;
-  return text.substring(0, maxLength) + '...';
+  return text.substring(0, maxLength) + "...";
 };
 
 const ProgressCards = ({ children, colorCard, style }: ProgressCardsProps) => (
-  <View style={[styles.card, colorCard ? { backgroundColor: colorCard } : null, style]}>
+  <View
+    style={[
+      styles.card,
+      colorCard ? { backgroundColor: colorCard } : null,
+      style,
+    ]}
+  >
     {children}
   </View>
 );
@@ -43,22 +49,24 @@ const ProgressCards = ({ children, colorCard, style }: ProgressCardsProps) => (
  * Props: children, style
  */
 ProgressCards.Title = ({ children, style }: ChildrenProps) => (
-  <View style={[styles.titleContainer, style]}>
-    {children}
-  </View>
+  <View style={[styles.titleContainer, style]}>{children}</View>
 );
 
 /**
  * TruncatedText: Componente de texto que automáticamente trunca el contenido
  * Props: children, style, maxLength
  */
-ProgressCards.TruncatedText = ({ children, style, maxLength = 20 }: { children: React.ReactNode; style?: StyleProp<ViewStyle>; maxLength?: number }) => {
-  if (typeof children === 'string') {
-    return (
-      <Text style={style}>
-        {truncateText(children, maxLength)}
-      </Text>
-    );
+ProgressCards.TruncatedText = ({
+  children,
+  style,
+  maxLength = 20,
+}: {
+  children: React.ReactNode;
+  style?: StyleProp<ViewStyle>;
+  maxLength?: number;
+}) => {
+  if (typeof children === "string") {
+    return <Text style={style}>{truncateText(children, maxLength)}</Text>;
   }
   return <Text style={style}>{children}</Text>;
 };
@@ -67,8 +75,15 @@ ProgressCards.TruncatedText = ({ children, style, maxLength = 20 }: { children: 
  * Progress: Barra de progreso lineal o circular
  * Props: value, type, color, style, radius, strokeWidth
  */
-ProgressCards.Progress = ({ value, type = 'linear', color = '#2563eb', style, radius = 18, strokeWidth = 4 }: ProgressProps) => {
-  if (type === 'circular') {
+ProgressCards.Progress = ({
+  value,
+  type = "linear",
+  color = "#2563eb",
+  style,
+  radius = 18,
+  strokeWidth = 4,
+}: ProgressProps) => {
+  if (type === "circular") {
     // Ajuste: dejar margen para el stroke
     const size = radius * 2 + strokeWidth;
     const center = size / 2;
@@ -77,7 +92,13 @@ ProgressCards.Progress = ({ value, type = 'linear', color = '#2563eb', style, ra
     const progress = (value / 100) * circumference;
     const strokeDashoffset = circumference - progress;
     return (
-      <View style={[styles.progressCircularContainer, { width: size, height: size }, style]}>
+      <View
+        style={[
+          styles.progressCircularContainer,
+          { width: size, height: size },
+          style,
+        ]}
+      >
         <Svg width={size} height={size}>
           <Circle
             cx={center}
@@ -101,7 +122,9 @@ ProgressCards.Progress = ({ value, type = 'linear', color = '#2563eb', style, ra
             origin={`${center},${center}`}
           />
         </Svg>
-        <View style={[styles.circularLabelContainer, { width: size, height: size }]}>
+        <View
+          style={[styles.circularLabelContainer, { width: size, height: size }]}
+        >
           <Text style={styles.circularLabel}>{`${Math.round(value)}%`}</Text>
         </View>
       </View>
@@ -109,7 +132,12 @@ ProgressCards.Progress = ({ value, type = 'linear', color = '#2563eb', style, ra
   }
   return (
     <View style={[styles.progressBarBg, style]}>
-      <View style={[styles.progressBar, { width: `${value}%`, backgroundColor: color }]} />
+      <View
+        style={[
+          styles.progressBar,
+          { width: `${value}%`, backgroundColor: color },
+        ]}
+      />
     </View>
   );
 };
@@ -119,9 +147,7 @@ ProgressCards.Progress = ({ value, type = 'linear', color = '#2563eb', style, ra
  * Props: children, style
  */
 ProgressCards.TotalTask = ({ children, style }: ChildrenProps) => (
-  <View style={[styles.totalTaskContainer, style]}>
-    {children}
-  </View>
+  <View style={[styles.totalTaskContainer, style]}>{children}</View>
 );
 
 /**
@@ -129,7 +155,13 @@ ProgressCards.TotalTask = ({ children, style }: ChildrenProps) => (
  * Props: children, color, style
  */
 ProgressCards.Icon = ({ children, color, style }: ChildrenProps) => (
-  <View style={[styles.iconContainer, color ? { backgroundColor: color } : null, style]}>
+  <View
+    style={[
+      styles.iconContainer,
+      color ? { backgroundColor: color } : null,
+      style,
+    ]}
+  >
     {children}
   </View>
 );
@@ -138,37 +170,69 @@ ProgressCards.Icon = ({ children, color, style }: ChildrenProps) => (
  * StatusTime: Composable, acepta children o props time y status
  * Si recibe children, los renderiza; si no, usa time y status
  */
-ProgressCards.StatusTime = ({ children, time, status }: { children?: React.ReactNode; time?: string; status?: 'done' | 'in-progress' | 'to-do' }) => {
+ProgressCards.StatusTime = ({
+  children,
+  time,
+  status,
+}: {
+  children?: React.ReactNode;
+  time?: string;
+  status?: "done" | "in-progress" | "to-do";
+}) => {
   if (children) return <View style={{ marginTop: 16 }}>{children}</View>;
   if (!time || !status) return null;
-  let statusText = '';
-  let statusColor = '';
-  let statusBg = '';
+  let statusText = "";
+  let statusColor = "";
+  let statusBg = "";
   switch (status) {
-    case 'done':
-      statusText = 'Done';
-      statusColor = '#a78bfa';
-      statusBg = '#ede9fe';
+    case "done":
+      statusText = "Done";
+      statusColor = "#a78bfa";
+      statusBg = "#ede9fe";
       break;
-    case 'in-progress':
-      statusText = 'In Progress';
-      statusColor = '#fb923c';
-      statusBg = '#fff7ed';
+    case "in-progress":
+      statusText = "In Progress";
+      statusColor = "#fb923c";
+      statusBg = "#fff7ed";
       break;
-    case 'to-do':
-      statusText = 'To-do';
-      statusColor = '#38bdf8';
-      statusBg = '#f0f9ff';
+    case "to-do":
+      statusText = "To-do";
+      statusColor = "#38bdf8";
+      statusBg = "#f0f9ff";
       break;
   }
   return (
-    <View style={{ flexDirection: 'row', alignItems: 'center', width: '100%', marginTop: 16 }}>
-      <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}>
-        <MaterialCommunityIcons name="clock" size={18} color="#a78bfa" style={{ marginRight: 4 }} />
-        <Text style={{ color: '#a78bfa', fontSize: 16, fontWeight: '500' }}>{time}</Text>
+    <View
+      style={{
+        flexDirection: "row",
+        alignItems: "center",
+        width: "100%",
+        marginTop: 16,
+      }}
+    >
+      <View style={{ flexDirection: "row", alignItems: "center", flex: 1 }}>
+        <MaterialCommunityIcons
+          name="clock"
+          size={18}
+          color="#a78bfa"
+          style={{ marginRight: 4 }}
+        />
+        <Text style={{ color: "#a78bfa", fontSize: 16, fontWeight: "500" }}>
+          {time}
+        </Text>
       </View>
-      <View style={{ backgroundColor: statusBg, borderRadius: 8, paddingHorizontal: 10, paddingVertical: 2, alignSelf: 'flex-end' }}>
-        <Text style={{ color: statusColor, fontWeight: '400', fontSize: 13 }}>{statusText}</Text>
+      <View
+        style={{
+          backgroundColor: statusBg,
+          borderRadius: 8,
+          paddingHorizontal: 10,
+          paddingVertical: 2,
+          alignSelf: "flex-end",
+        }}
+      >
+        <Text style={{ color: statusColor, fontWeight: "400", fontSize: 13 }}>
+          {statusText}
+        </Text>
       </View>
     </View>
   );
@@ -181,9 +245,9 @@ const styles = StyleSheet.create({
     paddingVertical: 18,
     paddingHorizontal: 24,
     width: 260,
-    alignSelf: 'center',
-    justifyContent: 'center',
-    shadowColor: '#000',
+    alignSelf: "center",
+    justifyContent: "center",
+    shadowColor: "#000",
     shadowOpacity: 0.06,
     shadowRadius: 8,
     shadowOffset: { width: 0, height: 2 },
@@ -192,11 +256,11 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   progressBarBg: {
-    width: '100%',
+    width: "100%",
     height: 7,
     borderRadius: 4,
-    backgroundColor: '#fff',
-    overflow: 'hidden',
+    backgroundColor: "#fff",
+    overflow: "hidden",
     marginTop: 12,
   },
   progressBar: {
@@ -204,21 +268,21 @@ const styles = StyleSheet.create({
     borderRadius: 4,
   },
   progressCircularContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     marginTop: 8,
   },
   circularLabelContainer: {
-    position: 'absolute',
+    position: "absolute",
     top: 0,
     left: 0,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
   circularLabel: {
-    fontWeight: 'bold',
+    fontWeight: "bold",
     fontSize: 10,
-    color: '#222',
+    color: "#222",
   },
   totalTaskContainer: {
     marginTop: 8,
@@ -228,10 +292,10 @@ const styles = StyleSheet.create({
     width: 38,
     height: 38,
     borderRadius: 38,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
 });
 
 // 4. Exportación
-export default ProgressCards; 
+export default ProgressCards;
